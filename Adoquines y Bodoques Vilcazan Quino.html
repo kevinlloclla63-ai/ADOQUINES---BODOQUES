@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Adoquines y Bodoques Vilcazan Quino</title>
+<style>
+:root{--bg:#fffaf0;--card:#fff;--tx:#1b2a4a;--mu:#667;--pr:#e6007e;--bl:#1a56db;--ln:#e5e0d5;--ok:#0a8a4a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121826;--card:#1c2538;--tx:#f1f3f8;--mu:#a3adc2;--ln:#2e3a54}}
+:root[data-theme="dark"]{--bg:#121826;--card:#1c2538;--tx:#f1f3f8;--mu:#a3adc2;--ln:#2e3a54}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:90px}
+.w{max-width:720px;margin:0 auto;padding:12px}
+h1{font-size:1.25rem;margin:4px 0;color:var(--pr)}
+h2{font-size:1.05rem;margin:18px 0 6px;color:var(--bl)}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin:8px 0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--ln)}
+.row:last-child{border:0}
+.nm{flex:1;min-width:0}.sm{color:var(--mu);font-size:.85rem}
+button{font:inherit;border:0;border-radius:9px;padding:8px 12px;background:var(--bl);color:#fff;cursor:pointer}
+button.g{background:var(--ln);color:var(--tx)}button.p{background:var(--pr)}button.o{background:var(--ok)}
+.q{display:flex;align-items:center;gap:8px}.q b{min-width:22px;text-align:center}.q button{width:36px;padding:6px 0}
+input,select,textarea{font:inherit;width:100%;padding:9px;border:1px solid var(--ln);border-radius:9px;background:var(--card);color:var(--tx);margin:4px 0}
+label{font-size:.9rem;color:var(--mu)}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--ln)}
+.bar .in{max-width:720px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tabs{display:flex;gap:6px;margin:8px 0}.tabs button{flex:1}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat div{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:10px;text-align:center}.stat b{display:block;font-size:1.3rem}
+.low{color:#d33;font-weight:700}
+a.btn{display:block;text-align:center;text-decoration:none;background:var(--ok);color:#fff;padding:12px;border-radius:10px;font-weight:700}
+a.off{opacity:.45;pointer-events:none}
+.hid{display:none}
+</style>
+<style>artifact-sync,artifact-local{display:contents}</style><style>artifact-sync,artifact-local{display:contents}</style></head>
+<body>
+<div class="w" id="app"></div>
+<script id="mainjs">
+const WA="51917132014";
+const PUB=["A0","A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12","A13","A14","A15","A16","A17","A18","A19","A20","A21","A22","B0","B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12","B13","B14","B15","B16","B17","S0","S1","S2","S3","S4","S5","P0","P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","C0"];/*pub*/
+const CATS=[
+ {k:"A",n:"Adoquines",p:1,f:["Fresa","Piña","Oreo","Maní","Sublime","Triyogurt","Trululú","Chin Chin","Chicle","Capuchino","Algarrobina","Arándano","Lúcuma","Maracumango","Ron con pasas","Coco","Mango","Frutilla","Sandía","Giobopop","Brownie","Explosión de Maracuyá","Explosión de Menta"]},
+ {k:"B",n:"Bodoques con leche",p:1,f:["Sublime","Coco","Piña","Oreo","Maní","Choco Maní","Choco Fresa","Trululú","Chin Chin","Chicle","Capuchino","Algarrobina","Arándano","Lúcuma","Ron con pasas","Maracumango","Explosión de Maracuyá","Explosión de Menta"]},
+ {k:"S",n:"Bodoques sin leche",p:1,f:["Maracuyá","Mango","Sandía","Tamarindo","Mango ciruelo","Chicha morada"]},
+ {k:"P",n:"Paletas",p:1.5,f:["Sublime","Oreo","Capuchino","Triyogurt Tropical","Choco Fresa","Choco Maracuyá","Choco Menta","Choco Arándanos","Choco Lúcuma","Choco Chin Chin","Choco Maní"]},
+ {k:"C",n:"Chocogalletas",p:1,f:["Chocogalleta"]}
+];
+const ITEMS=[];CATS.forEach(c=>c.f.forEach((f,i)=>ITEMS.push({id:c.k+i,cat:c.n,name:f,p:c.p})));
+const money=n=>"S/ "+n.toFixed(2);
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+let S={stock:{},days:{}},dbRef=null,hasDb=false,cart={},pay="Yape",mode="Delivery";
+const app=document.getElementById("app");
+const isAdmin=()=>location.hash==="#admin";
+window.addEventListener("hashchange",render);
+
+function load(){
+  try{const t=localStorage.getItem("vq");if(t)S=JSON.parse(t)}catch(e){}
+  if(!window.claude||!claude.use)return;
+  claude.use("db").then(db=>{
+    if(!db)return;
+    dbRef=db.doc("app/state");hasDb=true;
+    let t=setTimeout(()=>{},10000);
+    dbRef.onSnapshot(s=>{clearTimeout(t);if(s.exists){S=Object.assign({stock:{},days:{}},s.data());if(!document.activeElement||document.activeElement.tagName!=="INPUT")render()}else render()},()=>{});
+  }).catch(()=>{});
+}
+function save(){
+  try{localStorage.setItem("vq",JSON.stringify(S))}catch(e){}
+  if(dbRef)dbRef.set(JSON.parse(JSON.stringify(S))).catch(()=>{});
+}
+const day=()=>{const k=today();return S.days[k]=S.days[k]||{p:{},s:{}}};
+function avail(id){return !PUB||PUB.indexOf(id)<0}
+function out(){return ITEMS.filter(i=>(S.stock[i.id]||0)<=0).map(i=>i.id)}
+function pending(){return JSON.stringify(out())!==JSON.stringify(PUB||[])}
+async function pubAvail(){
+  try{
+    const a=await claude.use("artifact");
+    if(!a){alert("No tienes permiso para publicar desde aquí");return}
+    const src=document.getElementById("mainjs").textContent.replace(/const PUB=.*?;\/\*pub\*\//,"const PUB="+JSON.stringify(out())+";/*pub*/");
+    const html="<!DOCTYPE html>\n<html lang=\"es\">\n<head>"+document.head.innerHTML+"</head>\n<body>\n<div class=\"w\" id=\"app\"></div>\n<script id=\"mainjs\">"+src+"<\/script>\n</body>\n</html>";
+    await a.publish(html);
+  }catch(e){alert("No se pudo publicar: "+((e&&e.message)||e))}
+}
+
+/* ---------- CLIENTE ---------- */
+function units(){return Object.values(cart).reduce((a,b)=>a+b,0)}
+function total(){return ITEMS.reduce((a,i)=>a+(cart[i.id]||0)*i.p,0)}
+function renderClient(){
+  let h='<h1>🍧 Vilcazan Quino</h1><div class="sm">Adoquines · Bodoques · Paletas · Chocogalletas. Marca tus sabores y envía tu pedido por WhatsApp.</div>';
+  CATS.forEach(c=>{
+    h+='<h2>'+c.n+' — '+money(c.p)+'</h2><div class="card">';
+    ITEMS.filter(i=>i.cat===c.n).forEach(i=>{
+      const ok=avail(i.id),q=cart[i.id]||0;
+      h+='<div class="row"><div class="nm">'+i.name+(ok?'':' <span class="sm">(agotado)</span>')+'</div>'+(ok?'<div class="q"><button class="g" data-m="'+i.id+'">−</button><b>'+q+'</b><button data-a="'+i.id+'">+</button></div>':'')+'</div>';
+    });
+    h+='</div>';
+  });
+  h+='<h2>Tu pedido</h2><div class="card" id="co">'+checkout()+'</div>';
+  h+='<div class="bar"><div class="in"><div><b id="tu">'+units()+' unid.</b><div class="sm">Total a pagar</div></div><b style="font-size:1.4rem" id="tt">'+money(total())+'</b></div></div>';
+  app.innerHTML=h;
+  bindClient();
+}
+function checkout(){
+  const lines=ITEMS.filter(i=>cart[i.id]).map(i=>'<div class="row"><div class="nm">'+cart[i.id]+' × '+i.cat+' '+i.name+'</div><b>'+money(cart[i.id]*i.p)+'</b></div>').join("")||'<div class="sm">Aún no has elegido sabores.</div>';
+  const need=mode==="Delivery"&&units()<5&&units()>0;
+  return lines+'<div class="row"><b>Total</b><b>'+money(total())+'</b></div>'+
+  '<label>Tu nombre</label><input id="nom" placeholder="Nombre">'+
+  '<label>Entrega</label><select id="mod"><option'+(mode==="Delivery"?" selected":"")+'>Delivery</option><option'+(mode==="Recojo"?" selected":"")+'>Recojo</option></select>'+
+  '<div id="dir" class="'+(mode==="Delivery"?"":"hid")+'"><label>Dirección y referencia</label><textarea id="adr" rows="2" placeholder="Calle, número, referencia"></textarea></div>'+
+  '<label>Método de pago</label><select id="pay"><option'+(pay==="Yape"?" selected":"")+'>Yape</option><option'+(pay==="Plin"?" selected":"")+'>Plin</option><option'+(pay==="Efectivo"?" selected":"")+'>Efectivo</option></select>'+
+  (need?'<div class="low">El delivery es a partir de 5 unidades. Te faltan '+(5-units())+'.</div>':'')+
+  '<a id="send" class="btn" target="_blank" rel="noopener">Enviar pedido por WhatsApp</a>';
+}
+function msg(){
+  const l=ITEMS.filter(i=>cart[i.id]).map(i=>"• "+cart[i.id]+" "+i.cat+" "+i.name+" ("+money(cart[i.id]*i.p)+")").join("\n");
+  const g=id=>(document.getElementById(id)||{}).value||"";
+  let t="Hola, quiero hacer un pedido:\n"+l+"\n\nTotal: "+money(total())+"\nCliente: "+g("nom")+"\nEntrega: "+mode;
+  if(mode==="Delivery")t+="\nDirección: "+g("adr");
+  t+="\nPago: "+pay;
+  return t;
+}
+function updSend(){
+  const a=document.getElementById("send");if(!a)return;
+  const bad=!units()||(mode==="Delivery"&&units()<5);
+  a.classList.toggle("off",bad);
+  a.href="https://wa.me/"+WA+"?text="+encodeURIComponent(msg());
+}
+function bindClient(){
+  app.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{cart[b.dataset.a]=(cart[b.dataset.a]||0)+1;keep()});
+  app.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{const k=b.dataset.m;if(cart[k]){cart[k]--;if(!cart[k])delete cart[k]}keep()});
+  bindCo();updSend();
+}
+function bindCo(){
+  const m=document.getElementById("mod"),p=document.getElementById("pay");
+  if(m)m.onchange=()=>{mode=m.value;keep()};
+  if(p)p.onchange=()=>{pay=p.value;updSend()};
+  ["nom","adr"].forEach(i=>{const e=document.getElementById(i);if(e)e.oninput=updSend});
+}
+function keep(){
+  const sy=window.scrollY,v={};
+  ["nom","adr"].forEach(i=>{const e=document.getElementById(i);if(e)v[i]=e.value});
+  renderClient();
+  Object.keys(v).forEach(i=>{document.getElementById(i).value=v[i]});
+  window.scrollTo(0,sy);updSend();
+}
+
+/* ---------- ADMIN ---------- */
+function totals(k){
+  const d=S.days[k]||{p:{},s:{}};let u=0,m=0,pr=0;
+  ITEMS.forEach(i=>{const s=d.s[i.id]||0;u+=s;m+=s*i.p;pr+=d.p[i.id]||0});
+  return {u,m,pr};
+}
+function renderAdmin(){
+  const t=totals(today()),d=day();
+  let h='<h1>📦 Panel del dueño</h1><div class="sm">'+today()+(hasDb?' · guardado en la nube':' · guardado solo en este dispositivo')+'</div>';
+  h+='<div class="stat"><div><b>'+t.pr+'</b><span class="sm">Producido hoy</span></div><div><b>'+t.u+'</b><span class="sm">Vendido hoy</span></div><div><b>'+money(t.m)+'</b><span class="sm">Ingreso hoy</span></div></div>';
+  h+='<div class="card"><b>Disponibilidad para clientes</b><div class="sm">Sabores agotados ahora: '+out().length+' de '+ITEMS.length+'. Los clientes no podrán pedir los agotados.</div>'+(pending()?'<div class="low">Hay cambios sin publicar.</div>':'<div class="sm">Todo publicado.</div>')+'<button class="p" id="pb" style="margin-top:6px">Publicar disponibilidad</button></div>';
+  h+='<div class="card sm">Toca <b>+ Producir</b> cuando prepares género y <b>Vender</b> cada vez que vendas una unidad. El stock se descuenta solo. Usa <b>Ajustar</b> para poner el stock real (ventas presenciales o conteo).</div>';
+  CATS.forEach(c=>{
+    h+='<h2>'+c.n+' — '+money(c.p)+'</h2><div class="card">';
+    ITEMS.filter(i=>i.cat===c.n).forEach(i=>{
+      const st=S.stock[i.id]||0;
+      h+='<div class="row"><div class="nm">'+i.name+'<div class="sm">Prod. '+(d.p[i.id]||0)+' · Vend. '+(d.s[i.id]||0)+'</div></div><b class="'+(st<=3?'low':'')+'">'+st+'</b><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="g" data-p="'+i.id+'">+ Producir</button><button class="o" data-s="'+i.id+'">Vender</button><button class="g" data-j="'+i.id+'">Ajustar</button></div></div>';
+    });
+    h+='</div>';
+  });
+  h+='<h2>Últimos 7 días</h2><div class="card">';
+  Object.keys(S.days).sort().reverse().slice(0,7).forEach(k=>{const x=totals(k);h+='<div class="row"><div>'+k+'</div><div class="sm">Prod. '+x.pr+' · Vend. '+x.u+'</div><b>'+money(x.m)+'</b></div>'});
+  h+='</div><div class="card"><button class="g" id="cl">Ver vista de clientes</button> <button class="p" id="rs">Reiniciar datos</button></div>';
+  app.innerHTML=h;
+  app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{const k=b.dataset.p,n=parseInt(prompt("¿Cuántas unidades produjiste?","10"),10);if(n>0){S.stock[k]=(S.stock[k]||0)+n;day().p[k]=(day().p[k]||0)+n;save();renderAdmin()}});
+  app.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{const k=b.dataset.s;if((S.stock[k]||0)<1){alert("No hay stock de este sabor");return}S.stock[k]--;day().s[k]=(day().s[k]||0)+1;save();renderAdmin()});
+  app.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.j,cur=S.stock[k]||0;
+    const r=prompt("Stock real de este sabor (el sistema dice "+cur+"):",cur);
+    if(r===null)return;
+    const n=parseInt(r,10);if(isNaN(n)||n<0)return;
+    const dif=n-cur;
+    if(dif<0&&confirm("Bajaron "+(-dif)+" unidades. ¿Fueron ventas presenciales?\nAceptar = registrarlas como venta (suma al ingreso).\nCancelar = solo corregir el stock."))day().s[k]=(day().s[k]||0)-dif;
+    if(dif>0&&confirm("Subieron "+dif+" unidades. ¿Es producción nueva?\nAceptar = registrarla como producción.\nCancelar = solo corregir el stock."))day().p[k]=(day().p[k]||0)+dif;
+    S.stock[k]=n;save();renderAdmin();
+  });
+  const pb=document.getElementById("pb");if(pb)pb.onclick=pubAvail;
+  document.getElementById("cl").onclick=()=>{location.hash=""};
+  document.getElementById("rs").onclick=()=>{if(confirm("¿Borrar todo el inventario y las ventas?")){S={stock:{},days:{}};save();renderAdmin()}};
+}
+function render(){isAdmin()?renderAdmin():renderClient()}
+render();load();
+</script>
+</body>
+</html>
